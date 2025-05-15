@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -43,37 +42,34 @@
     <img src="logo-celltech.jpg" alt="CellTech Panamby Logo" />
     <p>Celulares, acessórios e assistência técnica com qualidade e confiança</p>
   </header>
-  <div id="busca"><input type="text" placeholder="Buscar produto ou categoria..." oninput="filtrarProdutos(this.value)" /></div>
-  <div class="filtro-categorias">
-    <button onclick="filtrarCategoria('todos')">Todos</button>
-    <button onclick="filtrarCategoria('celular')">Celulares</button>
-    <button onclick="filtrarCategoria('acessorio')">Acessórios</button>
-    <button onclick="filtrarCategoria('fone')">Fones</button>
-    <button onclick="filtrarCategoria('carregador')">Carregadores</button>
-    <button onclick="filtrarCategoria('manutencao')">Manutenção</button>
+
+  <div id="busca">
+    <input type="text" placeholder="Buscar produto ou categoria..." oninput="filtrarProdutos(this.value)" />
   </div>
-  <div id="produtos"><p style="text-align:center;">Carregando produtos...</p></div>
+
+  <div class="filtro-categorias" id="filtros">
+    <!-- Botões gerados automaticamente -->
+  </div>
+
+  <div id="produtos">
+    <p style="text-align:center;">Carregando produtos...</p>
+  </div>
+
   <div class="classificacao-info">
     <h2><i class="fas fa-tags"></i> Classificação dos Produtos</h2>
     <p>Todos os produtos da CellTech Panamby são testados e garantidos.</p>
     <p><span class="azul">Classificação A:</span> produtos em ótimo estado, com mínimas marcas ou riscos leves.</p>
     <p><span class="amarelo">Classificação B:</span> produtos com marcas visíveis, mas funcionando perfeitamente.</p>
   </div>
+
   <footer>
     © 2025 CellTech Panamby — Todos os direitos reservados<br>
     <i class="fab fa-instagram"></i> @celltechpanamby
   </footer>
+
   <script>
-    const API_URL = "https://script.google.com/macros/s/AKfycbx1KGaiCRpwHMrJBn1ifwaXK8nfukaYcmDXKxNPGhtVTozZ-nNcAL01CXrx3pU9-Q9g/exec";
-    async function carregarProdutos() {
-      try {
-        const resposta = await fetch(API_URL);
-        const html = await resposta.text();
-        document.getElementById("produtos").innerHTML = html;
-      } catch (erro) {
-        document.getElementById("produtos").innerHTML = "<p style='text-align:center;color:#f44336;'>Erro ao carregar produtos.</p>";
-      }
-    }
+    const API_URL = "LINK_DA_API_DO_GOOGLE_APPS_SCRIPT"; // Substitua aqui depois
+
     function filtrarProdutos(termo) {
       termo = termo.toLowerCase();
       document.querySelectorAll(".produto").forEach(p => {
@@ -81,12 +77,48 @@
         p.style.display = texto.includes(termo) ? "block" : "none";
       });
     }
+
     function filtrarCategoria(categoria) {
       document.querySelectorAll(".produto").forEach(p => {
         const cat = p.getAttribute("data-categoria") || "";
         p.style.display = (categoria === "todos" || cat === categoria) ? "block" : "none";
       });
     }
+
+    function gerarFiltros() {
+      const categorias = new Set();
+      document.querySelectorAll(".produto").forEach(p => {
+        const cat = p.getAttribute("data-categoria");
+        if (cat) categorias.add(cat);
+      });
+
+      const container = document.getElementById("filtros");
+      container.innerHTML = "";
+
+      const botaoTodos = document.createElement("button");
+      botaoTodos.textContent = "Todos";
+      botaoTodos.onclick = () => filtrarCategoria('todos');
+      container.appendChild(botaoTodos);
+
+      categorias.forEach(cat => {
+        const btn = document.createElement("button");
+        btn.textContent = cat.charAt(0).toUpperCase() + cat.slice(1);
+        btn.onclick = () => filtrarCategoria(cat);
+        container.appendChild(btn);
+      });
+    }
+
+    async function carregarProdutos() {
+      try {
+        const resposta = await fetch(API_URL);
+        const html = await resposta.text();
+        document.getElementById("produtos").innerHTML = html;
+        gerarFiltros();
+      } catch (erro) {
+        document.getElementById("produtos").innerHTML = "<p style='text-align:center;color:#f44336;'>Erro ao carregar produtos.</p>";
+      }
+    }
+
     carregarProdutos();
   </script>
 </body>
